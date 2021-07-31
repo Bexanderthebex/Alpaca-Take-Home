@@ -7,8 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -32,8 +30,8 @@ func main() {
 	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
 
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-
 	lotteryBetsReader := NewBetsReader(int64(0), file)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, "\n")
 
 	for {
 		fileReadBuffer := make([]byte, 4096*3)
@@ -43,32 +41,7 @@ func main() {
 		}
 
 		stringifiedLottoRecords := string(fileReadBuffer)
-		records := strings.Split(stringifiedLottoRecords, "\n")
-		for _, record := range records {
-			lottoPicks := make([]string, 0)
-			for _, s := range strings.Split(record, " ") {
-				if s != "" {
-					lottoPicks = append(lottoPicks, s)
-				}
-			}
-
-			formattedLottoPicks := make([]uint, 0)
-			for _, lottoPick := range lottoPicks {
-				formattedLottoPick, _ := strconv.Atoi(lottoPick)
-				validLottoPickFormat := uint(formattedLottoPick)
-				formattedLottoPicks = append(formattedLottoPicks, validLottoPickFormat)
-			}
-
-			if picksValid(formattedLottoPicks) {
-				for _, flt := range formattedLottoPicks {
-					recordId := boolMap.GetTotalRecords()
-					boolMap.SetValue(flt, recordId, true)
-				}
-
-				boolMap.IncrementTotalRecords()
-			}
-
-		}
+		lotteryBetsVisitor.Visit(&stringifiedLottoRecords)
 	}
 
 	if fileCloseError := file.Close(); fileCloseError != nil {
