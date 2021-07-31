@@ -33,23 +33,14 @@ func main() {
 
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
 
-	var bufferOffset int64 = 0
+	lotteryBetsReader := NewBetsReader(int64(0), file)
 
 	for {
 		fileReadBuffer := make([]byte, 4096*3)
-		_, fileReadError := file.ReadAt(fileReadBuffer, bufferOffset)
+		_, fileReadError := lotteryBetsReader.Read(&fileReadBuffer)
 		if errors.Is(fileReadError, io.EOF) {
 			break
 		}
-
-		// find the last complete line scanned
-		for i := len(fileReadBuffer) - 1; i > 0; i -= 1 {
-			if string(fileReadBuffer[i]) == "\n" {
-				fileReadBuffer = fileReadBuffer[:i]
-				break
-			}
-		}
-		bufferOffset += int64(len(fileReadBuffer) + 1)
 
 		stringifiedLottoRecords := string(fileReadBuffer)
 		records := strings.Split(stringifiedLottoRecords, "\n")
