@@ -18,36 +18,7 @@ var maximumValidPick uint = 90
 
 var lottoPickLength = 5
 
-type BitSet map[uint]*[]bool
-
-// totalRecords could be a BitSet value
-func (bs *BitSet) CalculateWinners(nums *[]uint, minMatch uint, totalRecords uint) map[uint]uint {
-	winningPicksIndex := make(map[uint]*[]bool)
-	// winning picks
-	for _, v := range *nums {
-		winningPicksIndex[v] = (*bs)[v]
-	}
-
-	groupedWinnersCount := make(map[uint]uint)
-	for i := uint(len(*nums)); i >= 2; i-- {
-		groupedWinnersCount[i] = 0
-	}
-
-	for i := uint(0); i < totalRecords; i++ {
-		var noOfHits uint = 0
-		for _, index := range winningPicksIndex {
-			if (*index)[i] {
-				noOfHits += 1
-			}
-		}
-
-		if noOfHits >= minMatch {
-			groupedWinnersCount[noOfHits] += 1
-		}
-	}
-
-	return groupedWinnersCount
-}
+var maximumBettors = 10000000
 
 func main() {
 	// call file
@@ -60,13 +31,8 @@ func main() {
 
 	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
 
-	bitSet := make(BitSet)
-	for i := minimumValidPick; i <= maximumValidPick; i++ {
-		boolSet := make([]bool, 10000000)
-		bitSet[i] = &boolSet
-	}
+	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
 
-	var recordCount uint = 0
 	var bufferOffset int64 = 0
 
 	for {
@@ -104,11 +70,11 @@ func main() {
 
 			if picksValid(formattedLottoPicks) {
 				for _, flt := range formattedLottoPicks {
-					boolMap := bitSet[flt]
-					(*boolMap)[recordCount] = true
+					recordId := boolMap.GetTotalRecords()
+					boolMap.SetValue(flt, recordId, true)
 				}
 
-				recordCount += 1
+				boolMap.IncrementTotalRecords()
 			}
 
 		}
@@ -149,7 +115,7 @@ func main() {
 		fmt.Println(winningPicks)
 
 		//answersMap := calculateWinners(winningPicks, playerPicksIndex, recordCount)
-		answersMap := bitSet.CalculateWinners(&winningPicks, 2, recordCount)
+		answersMap := boolMap.CalculateWinners(&winningPicks, 2)
 
 		for i := 5; i >= 2; i-- {
 			fmt.Printf("%d: %d\n", i, answersMap[uint(i)])
