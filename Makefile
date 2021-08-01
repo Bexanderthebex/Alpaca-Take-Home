@@ -6,7 +6,7 @@ runAlpacaInputFile:
 	./main 10m-v2.txt
 
 test:
-	go test -v .
+	APP_ENVIRONMENT=TEST go test -v .
 
 test-benchmark:
 	APP_ENVIRONMENT=TEST go test -bench=. -benchmem
