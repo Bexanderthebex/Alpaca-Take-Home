@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+//TODO: not bad but might be improved
 func BenchmarkLotteryBetsVisitor_Visit(b *testing.B) {
 	boolMap := NewBoolMap(1, 90, 10000000)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")

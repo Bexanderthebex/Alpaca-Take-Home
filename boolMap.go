@@ -28,6 +28,10 @@ func (bm *BoolMap) GetValue(index uint, recordId uint) bool {
 	return (*boolSet)[recordId]
 }
 
+func (bm *BoolMap) GetIndex(index uint) *[]bool {
+	return bm.boolMap[index]
+}
+
 func (bm *BoolMap) GetTotalRecords() uint {
 	return bm.totalRecords
 }

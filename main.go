@@ -1,12 +1,10 @@
 package main
 
 import (
-	"alpacahq-take-home/m/lib"
 	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"sync"
 )
 
 // valid value range for lottery picks
@@ -75,50 +73,25 @@ func main() {
 
 		fmt.Println(winningPicks)
 
+		queryPlan := QueryPlan{
+			columnsToSelect: &winningPicks,
+			aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
+			minValue:        minimumValidPick,
+			maxValue:        maximumValidPick,
+			category:        true,
+		}
+
+		queryEngine := LotteryBetsQueryEngine{
+			boolMap: boolMap,
+		}
+
 		//answersMap := calculateWinners(winningPicks, playerPicksIndex, recordCount)
-		answersMap := boolMap.CalculateWinners(&winningPicks, 2)
+		answersMap := queryEngine.ExecuteQuery(queryPlan)
 
 		for i := 5; i >= 2; i-- {
 			fmt.Printf("%d: %d\n", i, answersMap[uint(i)])
 		}
 	}
-}
-
-func calculateWinners(winningPicks []uint, playerPicksIndex *lib.BitMap, totalBettors uint) map[uint]int {
-	winningPicksMiniIndex := sync.Map{}
-
-	var waitgroup sync.WaitGroup
-	waitgroup.Add(len(winningPicks))
-
-	for _, winningPick := range winningPicks {
-		go convertByteIndexToBool(playerPicksIndex, &waitgroup, winningPick, &winningPicksMiniIndex)
-	}
-
-	waitgroup.Wait()
-
-	answer := make(map[uint]int)
-	for i := 0; uint(i) < totalBettors; i++ {
-		var noOfHits uint
-		winningPicksMiniIndex.Range(func(syncMapKey interface{}, syncMapValue interface{}) bool {
-			boolIndex := syncMapValue.(*[]bool)
-			if (*boolIndex)[i] {
-				noOfHits += 1
-			}
-
-			return true
-		})
-		if noOfHits >= 2 {
-			answer[noOfHits] += 1
-		}
-	}
-
-	return answer
-}
-
-func convertByteIndexToBool(bitMap *lib.BitMap, waitgroup *sync.WaitGroup, index uint, memoryIndex *sync.Map) {
-	defer waitgroup.Done()
-	boolIndex := bitMap.GetIndexAsBool(index)
-	memoryIndex.Store(index, boolIndex)
 }
 
 func picksValid(picks []uint) bool {
