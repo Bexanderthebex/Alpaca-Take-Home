@@ -2,9 +2,8 @@ package main
 
 import (
 	"alpacahq-take-home/m/lib"
-	"errors"
+	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"sync"
@@ -30,18 +29,16 @@ func main() {
 	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
 
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-	lotteryBetsReader := NewBetsReader(int64(0), file)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, "\n")
 
 	for {
-		fileReadBuffer := make([]byte, 4096*3)
-		_, fileReadError := lotteryBetsReader.Read(&fileReadBuffer)
-		if errors.Is(fileReadError, io.EOF) {
-			break
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			lottoBet := scanner.Text()
+			lotteryBetsVisitor.Visit(lottoBet)
 		}
 
-		stringifiedLottoRecords := string(fileReadBuffer)
-		lotteryBetsVisitor.Visit(&stringifiedLottoRecords)
+		break
 	}
 
 	if fileCloseError := file.Close(); fileCloseError != nil {
@@ -125,6 +122,10 @@ func convertByteIndexToBool(bitMap *lib.BitMap, waitgroup *sync.WaitGroup, index
 }
 
 func picksValid(picks []uint) bool {
+	if len(picks) < lottoPickLength {
+		return false
+	}
+
 	picksMap := make(map[uint]int)
 
 	for _, v := range picks {

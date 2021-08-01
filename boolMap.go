@@ -19,12 +19,12 @@ func NewBoolMap(startingCardinality uint, cardinality uint, setSize int) *BoolMa
 }
 
 func (bm *BoolMap) SetValue(index uint, recordId uint, value bool) {
-	boolSet := (*bm).boolMap[index]
+	boolSet := bm.boolMap[index]
 	(*boolSet)[recordId] = value
 }
 
 func (bm *BoolMap) GetValue(index uint, recordId uint) bool {
-	boolSet := (*bm).boolMap[index]
+	boolSet := bm.boolMap[index]
 	return (*boolSet)[recordId]
 }
 
