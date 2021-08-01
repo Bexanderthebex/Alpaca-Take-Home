@@ -58,8 +58,8 @@ func main() {
 			fmt.Println("Please enter the correct format")
 		}
 		if noOfWinningPicksParsed < 5 {
-			continueSearch = false
-			fmt.Printf("Only %d\n", noOfWinningPicksParsed)
+			fmt.Printf("Please enter 5 winning picks, only %d were entered\n", noOfWinningPicksParsed)
+			continue
 		}
 
 		fmt.Printf("Sucessfully parsed %d\n winning picks", noOfWinningPicksParsed)

@@ -42,6 +42,7 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 
 		l.boolMap.IncrementTotalRecords()
 	} else {
+		fmt.Println("Detected invalid lotto picks. Discarding")
 		fmt.Println(lottoPicks)
 	}
 }
