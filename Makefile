@@ -8,4 +8,4 @@ test:
 	go test -v .
 
 test-benchmark:
-	go test -bench=.
+	go test -bench=. -benchmem
