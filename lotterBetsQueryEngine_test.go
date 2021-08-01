@@ -9,6 +9,46 @@ import (
 	"time"
 )
 
+func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
+	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, 100)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
+
+	mockBets := []string{
+		"29 10 11 12 13",
+		"20 31 32 81 60",
+		"78 30 29 10 11",
+		"29 30 32 31 80",
+		"29 30 32 31 78",
+	}
+
+	expectedResult := make(map[uint]uint)
+	expectedResult[5] = 1
+	expectedResult[4] = 1
+	expectedResult[3] = 1
+	expectedResult[2] = 1
+
+	for _, mockBet := range mockBets {
+		lotteryBetsVisitor.Visit(mockBet)
+	}
+
+	winningPicks := []uint{29, 30, 32, 31, 78}
+	queryPlan := QueryPlan{
+		columnsToSelect: &winningPicks,
+		aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
+		minValue:        minimumValidPick,
+		maxValue:        maximumValidPick,
+		category:        true,
+	}
+
+	queryEngine := LotteryBetsQueryEngine{
+		boolMap: boolMap,
+	}
+
+	answerMap := queryEngine.ExecuteQuery(queryPlan)
+
+	assertEqualMap(t, expectedResult, answerMap, "Wrong query result")
+}
+
 func BenchmarkLotteryBetsQueryEngine_10m_v2_ExecuteQuery(b *testing.B) {
 	// Initialize data first, so need to stop the timer
 	b.StopTimer()
