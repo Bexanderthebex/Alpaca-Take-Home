@@ -5,7 +5,7 @@ runAlpacaInputFile:
 	make build
 	./main 10m-v2.txt
 
-test:
+test-correctness:
 	APP_ENVIRONMENT=TEST go test -v .
 
 test-benchmark:
