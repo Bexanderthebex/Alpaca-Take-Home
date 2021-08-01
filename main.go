@@ -29,7 +29,7 @@ func main() {
 	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
 
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, "\n")
+	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
 	for {
 		scanner := bufio.NewScanner(file)
