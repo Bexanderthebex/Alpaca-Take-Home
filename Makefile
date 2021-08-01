@@ -9,4 +9,4 @@ test:
 	go test -v .
 
 test-benchmark:
-	go test -bench=. -benchmem
+	APP_ENVIRONMENT=TEST go test -bench=. -benchmem

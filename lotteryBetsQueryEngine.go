@@ -52,6 +52,10 @@ type QueryPlan struct {
 	category        interface{}
 }
 
+func (qp QueryPlan) SetColumnsToSelect(newColumns *[]uint) {
+	qp.columnsToSelect = newColumns
+}
+
 func (qp QueryPlan) SelectGroupStrategy(table *BoolMap) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 

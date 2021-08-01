@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -41,7 +42,9 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 		}
 
 		l.boolMap.IncrementTotalRecords()
-	} else {
+	}
+
+	if !picksValid(formattedLottoPicks) && os.Getenv("APP_ENVIRONMENT") != "TEST" {
 		fmt.Println("Detected invalid lotto picks. Discarding")
 		fmt.Println(lottoPicks)
 	}

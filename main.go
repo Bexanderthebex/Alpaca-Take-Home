@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // valid value range for lottery picks
@@ -43,28 +45,31 @@ func main() {
 		panic(fileCloseError)
 	}
 
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("READY")
 
 	// query engine
 	for continueSearch := true; continueSearch == true; {
-		var winningPick1 uint
-		var winningPick2 uint
-		var winningPick3 uint
-		var winningPick4 uint
-		var winningPick5 uint
-		noOfWinningPicksParsed, winningPickParsingError := fmt.Scanf("%d %d %d %d %d\n", &winningPick1, &winningPick2, &winningPick3, &winningPick4, &winningPick5)
-		if winningPickParsingError != nil {
-			fmt.Println(winningPickParsingError)
+		text, readStringError := reader.ReadString('\n')
+		if readStringError != nil {
+			fmt.Println(readStringError)
 			fmt.Println("Please enter the correct format")
 		}
-		if noOfWinningPicksParsed < 5 {
-			fmt.Printf("Please enter 5 winning picks, only %d were entered\n", noOfWinningPicksParsed)
+
+		text = strings.Replace(text, "\n", "", -1)
+		winningPicks := make([]uint, 0)
+		for _, bet := range strings.Split(text, " ") {
+			if bet != "" {
+				formattedBetString, _ := strconv.Atoi(bet)
+				winningPicks = append(winningPicks, uint(formattedBetString))
+			}
+		}
+
+		if len(winningPicks) < 5 {
+			fmt.Printf("Please enter 5 winning picks, only %d were entered\n", len(winningPicks))
 			continue
 		}
 
-		fmt.Printf("Sucessfully parsed %d\n winning picks", noOfWinningPicksParsed)
-
-		winningPicks := []uint{winningPick1, winningPick2, winningPick3, winningPick4, winningPick5}
 		isPicksValid := picksValid(winningPicks)
 		if !isPicksValid {
 			fmt.Println("Please enter values that are only between 1 and 90")
