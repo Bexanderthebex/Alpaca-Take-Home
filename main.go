@@ -26,10 +26,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
-
-	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
+	bitMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
+	//bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors/8)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -77,17 +76,16 @@ func main() {
 
 		queryPlan := QueryPlan{
 			columnsToSelect: &winningPicks,
-			aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
+			aggregationCmd:  NewQueryAggregationBool(bitMap.GetTotalRecords()),
 			minValue:        minimumValidPick,
 			maxValue:        maximumValidPick,
 			category:        true,
 		}
 
 		queryEngine := LotteryBetsQueryEngine{
-			boolMap: boolMap,
+			boolMap: bitMap,
 		}
 
-		//answersMap := calculateWinners(winningPicks, playerPicksIndex, recordCount)
 		answersMap := queryEngine.ExecuteQuery(queryPlan)
 
 		for i := 5; i >= 2; i-- {
