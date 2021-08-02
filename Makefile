@@ -1,5 +1,5 @@
 build:
-	go build ./main.go ./boolMap.go ./lotteryBetsVisitor.go ./lotteryBetsQueryEngine.go ./bitMap.go ./dataStore.go
+	go build ./main.go ./lotteryBetsVisitor.go ./lotteryBetsQueryEngine.go ./bitMap.go
 
 runAlpacaInputFile:
 	make build
