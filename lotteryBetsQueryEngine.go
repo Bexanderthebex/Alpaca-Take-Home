@@ -15,12 +15,14 @@ func (qa AggregationCommand) Int() int {
 }
 
 type Aggregation interface {
-	Aggregate(interface{}, interface{}) *[]uint
+	Aggregate(BitMapIndex, interface{}, uint) *[]uint
+	SetCurrentRecord(interface{})
 }
 
 type BoolQueryAggregation struct {
 	aggregationArray   *[]uint
 	aggregationCommand AggregationCommand
+	currentRecord      interface{}
 }
 
 func NewQueryAggregationBool(recordLength uint) *BoolQueryAggregation {
@@ -32,10 +34,18 @@ func NewQueryAggregationBool(recordLength uint) *BoolQueryAggregation {
 	}
 }
 
-func (qa BoolQueryAggregation) Aggregate(records interface{}, category interface{}) *[]uint {
+func (qa *BoolQueryAggregation) SetCurrentRecord(recordIndex interface{}) {
+	qa.currentRecord = recordIndex
+}
+
+func (qa BoolQueryAggregation) getCurrentRecord() interface{} {
+	return qa.currentRecord
+}
+
+func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
-		for recordId, record := range *(records).(*[]bool) {
-			if record == category.(bool) {
+		for recordId := uint(0); recordId <= limit; recordId++ {
+			if table.GetValue(qa.getCurrentRecord().(uint), recordId) == category.(bool) {
 				(*qa.aggregationArray)[recordId] += 1
 			}
 		}
@@ -56,12 +66,13 @@ func (qp QueryPlan) SetColumnsToSelect(newColumns *[]uint) {
 	qp.columnsToSelect = newColumns
 }
 
-func (qp QueryPlan) SelectGroupStrategy(table *BoolMap) map[uint]uint {
+func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 
 	var aggregatedValues *[]uint
 	for _, v := range *qp.columnsToSelect {
-		aggregatedValues = qp.aggregationCmd.Aggregate((*table).GetIndex(v), qp.category)
+		qp.aggregationCmd.SetCurrentRecord(v)
+		aggregatedValues = qp.aggregationCmd.Aggregate(table, qp.category, table.GetTotalRecords())
 	}
 
 	for _, v := range *aggregatedValues {
@@ -74,7 +85,7 @@ func (qp QueryPlan) SelectGroupStrategy(table *BoolMap) map[uint]uint {
 }
 
 type LotteryBetsQueryEngine struct {
-	boolMap *BoolMap
+	boolMap BitMapIndex
 }
 
 func (l *LotteryBetsQueryEngine) ExecuteQuery(qp QueryPlan) map[uint]uint {
