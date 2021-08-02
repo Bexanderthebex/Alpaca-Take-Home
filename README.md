@@ -39,3 +39,11 @@ memory usage 8 times lower than the boolMap implementation.
 
 <img width="1201" alt="Screen Shot 2021-08-02 at 9 55 44 PM" src="https://user-images.githubusercontent.com/22711718/127876492-252a186a-d63a-482d-b1ba-545d2521545d.png">
 
+<img width="1032" alt="Screen Shot 2021-08-02 at 10 24 24 PM" src="https://user-images.githubusercontent.com/22711718/127877149-b23c2caa-ea76-4411-8467-0b8c45e29714.png">
+
+**Memory used when using a bitMap**
+<img width="942" alt="Screen Shot 2021-08-02 at 10 27 21 PM" src="https://user-images.githubusercontent.com/22711718/127877426-ab7965ad-dfe4-4396-8c08-42d734ff2099.png">
+
+**Memory used when using a boolMap**
+<img width="954" alt="Screen Shot 2021-08-02 at 10 28 49 PM" src="https://user-images.githubusercontent.com/22711718/127877578-4dfb451f-f556-425e-aa39-1189c798311d.png">
+
