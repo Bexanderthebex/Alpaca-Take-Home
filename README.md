@@ -1,7 +1,7 @@
 # Alpaca-Take-Home
 Alpaca's Take Home Exam solution
 
-### Problem :thinking_face:
+### Problem
 This problem is related to the Hungarian lottery. In case you are not familiar with it: players pick 5 distinct numbers from 1 to 90. There is a weekly lottery picking event when the lotto organization picks 5 distinct numbers randomly between 1 and 90 – just like the players did. The player’s reward then depends on how many of the player’s numbers match with the ones selected at the lotto picking. A player wins if he/she has 2, 3, 4 or 5 matching numbers.
 
 Now, the problem: at the lottery event, right after picking the numbers, a computer shall be able to report quickly that how many winners are in each category, for example:
@@ -47,3 +47,11 @@ memory usage 8 times lower than the boolMap implementation.
 **Memory used when using a boolMap**
 <img width="954" alt="Screen Shot 2021-08-02 at 10 28 49 PM" src="https://user-images.githubusercontent.com/22711718/127877578-4dfb451f-f556-425e-aa39-1189c798311d.png">
 
+### How to run?
+1. First extract the Alpaca Markets input file using `make extract-alpaca-input-file`
+2. Run the app using the Alpaca input file using `make run-alpaca-input-file`
+
+### How to run tests?
+For Benchmarks, run `make test-benchmark`
+
+For Unit tests, run `make test-correctness`
