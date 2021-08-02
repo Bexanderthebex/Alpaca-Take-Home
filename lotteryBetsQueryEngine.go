@@ -45,7 +45,8 @@ func (qa BoolQueryAggregation) getCurrentRecord() interface{} {
 func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
 		for recordId := uint(0); recordId <= limit; recordId++ {
-			if table.GetValue(qa.getCurrentRecord().(uint), recordId) == category.(bool) {
+			tableValue := table.GetValue(qa.getCurrentRecord().(uint), recordId)
+			if tableValue == category.(bool) {
 				(*qa.aggregationArray)[recordId] += 1
 			}
 		}
@@ -72,7 +73,8 @@ func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 	var aggregatedValues *[]uint
 	for _, v := range *qp.columnsToSelect {
 		qp.aggregationCmd.SetCurrentRecord(v)
-		aggregatedValues = qp.aggregationCmd.Aggregate(table, qp.category, table.GetTotalRecords())
+		totalRecords := table.GetTotalRecords()
+		aggregatedValues = qp.aggregationCmd.Aggregate(table, qp.category, totalRecords)
 	}
 
 	for _, v := range *aggregatedValues {
