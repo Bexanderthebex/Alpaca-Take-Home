@@ -36,3 +36,6 @@ In my solution, I implemented a boolMap `map[uint]*[]bool` and compared it again
 The boolMap implementation beats the bitMap implementation in terms of speed to query but the bitMap implementation is much more efficient
 in terms of storing data since it is just storing the match column information using 1 bit meaning a single byte in a byte array which makes the
 memory usage 8 times lower than the boolMap implementation.
+
+<img width="1201" alt="Screen Shot 2021-08-02 at 9 55 44 PM" src="https://user-images.githubusercontent.com/22711718/127876492-252a186a-d63a-482d-b1ba-545d2521545d.png">
+
