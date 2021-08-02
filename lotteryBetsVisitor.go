@@ -8,13 +8,13 @@ import (
 )
 
 type LotteryBetsVisitor struct {
-	boolMap   *BoolMap
+	bitmap    BitMapIndex
 	separator string
 }
 
-func NewLotteryBetsVisitor(boolMap *BoolMap, separator string) *LotteryBetsVisitor {
+func NewLotteryBetsVisitor(bitmap BitMapIndex, separator string) *LotteryBetsVisitor {
 	return &LotteryBetsVisitor{
-		boolMap:   boolMap,
+		bitmap:    bitmap,
 		separator: separator,
 	}
 }
@@ -37,11 +37,11 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 
 	if picksValid(formattedLottoPicks) {
 		for _, flt := range formattedLottoPicks {
-			recordId := l.boolMap.GetTotalRecords()
-			l.boolMap.SetValue(flt, recordId, true)
+			recordId := l.bitmap.GetTotalRecords()
+			l.bitmap.SetValue(flt, recordId, true)
 		}
 
-		l.boolMap.IncrementTotalRecords()
+		l.bitmap.IncrementTotalRecords()
 	}
 
 	if !picksValid(formattedLottoPicks) && os.Getenv("APP_ENVIRONMENT") != "TEST" {
