@@ -8,11 +8,11 @@ import (
 )
 
 type LotteryBetsVisitor struct {
-	bitmap    BitMapIndex
+	bitmap    *BitMap
 	separator string
 }
 
-func NewLotteryBetsVisitor(bitmap BitMapIndex, separator string) *LotteryBetsVisitor {
+func NewLotteryBetsVisitor(bitmap *BitMap, separator string) *LotteryBetsVisitor {
 	return &LotteryBetsVisitor{
 		bitmap:    bitmap,
 		separator: separator,

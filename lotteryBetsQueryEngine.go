@@ -15,7 +15,7 @@ func (qa AggregationCommand) Int() int {
 }
 
 type Aggregation interface {
-	Aggregate(BitMapIndex, interface{}, uint) *[]uint
+	Aggregate(*BitMap, interface{}, uint) *[]uint
 	SetCurrentRecord(uint)
 }
 
@@ -42,7 +42,7 @@ func (qa BoolQueryAggregation) getCurrentRecord() uint {
 	return qa.currentRecord
 }
 
-func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
+func (qa BoolQueryAggregation) Aggregate(table *BitMap, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
 		for recordId := uint(0); recordId <= limit; recordId++ {
 			tableValue := table.GetValue(qa.getCurrentRecord(), recordId)
@@ -67,7 +67,7 @@ func (qp QueryPlan) SetColumnsToSelect(newColumns *[]uint) {
 	qp.columnsToSelect = newColumns
 }
 
-func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
+func (qp QueryPlan) SelectGroupStrategy(table *BitMap) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 
 	var aggregatedValues *[]uint
@@ -87,7 +87,7 @@ func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 }
 
 type LotteryBetsQueryEngine struct {
-	boolMap BitMapIndex
+	boolMap *BitMap
 }
 
 func (l *LotteryBetsQueryEngine) ExecuteQuery(qp QueryPlan) map[uint]uint {

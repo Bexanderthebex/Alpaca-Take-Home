@@ -5,7 +5,7 @@ import (
 )
 
 func TestLotteryBetsVisitor_Visit(t *testing.T) {
-	boolMap := NewBoolMap(1, 90, 100)
+	boolMap := NewBitMap(1, 90, 100)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
 	mockLotteryBets := []string{
