@@ -31,14 +31,10 @@ func main() {
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
-	for {
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			lottoBet := scanner.Text()
-			lotteryBetsVisitor.Visit(lottoBet)
-		}
-
-		break
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lottoBet := scanner.Text()
+		lotteryBetsVisitor.Visit(lottoBet)
 	}
 
 	if fileCloseError := file.Close(); fileCloseError != nil {
@@ -76,6 +72,7 @@ func main() {
 			continue
 		}
 
+		fmt.Println("Winning picks parsed:")
 		fmt.Println(winningPicks)
 
 		queryPlan := QueryPlan{
