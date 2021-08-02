@@ -16,13 +16,13 @@ func (qa AggregationCommand) Int() int {
 
 type Aggregation interface {
 	Aggregate(BitMapIndex, interface{}, uint) *[]uint
-	SetCurrentRecord(interface{})
+	SetCurrentRecord(uint)
 }
 
 type BoolQueryAggregation struct {
 	aggregationArray   *[]uint
 	aggregationCommand AggregationCommand
-	currentRecord      interface{}
+	currentRecord      uint
 }
 
 func NewQueryAggregationBool(recordLength uint) *BoolQueryAggregation {
@@ -34,18 +34,18 @@ func NewQueryAggregationBool(recordLength uint) *BoolQueryAggregation {
 	}
 }
 
-func (qa *BoolQueryAggregation) SetCurrentRecord(recordIndex interface{}) {
+func (qa *BoolQueryAggregation) SetCurrentRecord(recordIndex uint) {
 	qa.currentRecord = recordIndex
 }
 
-func (qa BoolQueryAggregation) getCurrentRecord() interface{} {
+func (qa BoolQueryAggregation) getCurrentRecord() uint {
 	return qa.currentRecord
 }
 
 func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
 		for recordId := uint(0); recordId <= limit; recordId++ {
-			tableValue := table.GetValue(qa.getCurrentRecord().(uint), recordId)
+			tableValue := table.GetValue(qa.getCurrentRecord(), recordId)
 			if tableValue == category.(bool) {
 				(*qa.aggregationArray)[recordId] += 1
 			}
