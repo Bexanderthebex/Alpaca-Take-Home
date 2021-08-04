@@ -24,7 +24,7 @@ func (bm *BitMap) SetValue(index uint, recordId uint, value bool) {
 	bitSet.SetTo(recordId, value)
 }
 
-func (bm *BitMap) GetValue(index uint, recordId uint) bool {
+func (bm BitMap) GetValue(index uint, recordId uint) bool {
 	bitSet := bm.bitMap[index]
 	return bitSet.Test(recordId)
 }
@@ -35,6 +35,6 @@ func (bm *BitMap) IncrementTotalRecords() uint {
 	return bm.totalRecords
 }
 
-func (bm *BitMap) GetTotalRecords() uint {
+func (bm BitMap) GetTotalRecords() uint {
 	return bm.totalRecords
 }
