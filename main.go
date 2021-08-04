@@ -44,7 +44,7 @@ func main() {
 	fmt.Println("READY")
 
 	// query engine
-	for continueSearch := true; continueSearch == true; {
+	for {
 		text, readStringError := reader.ReadString('\n')
 		if readStringError != nil {
 			fmt.Println(readStringError)
@@ -74,13 +74,11 @@ func main() {
 		fmt.Println("Winning picks parsed:")
 		fmt.Println(winningPicks)
 
-		queryPlan := QueryPlan{
-			columnsToSelect: &winningPicks,
-			aggregationCmd:  NewQueryAggregationBool(bitMap.GetTotalRecords()),
-			minValue:        minimumValidPick,
-			maxValue:        maximumValidPick,
-			category:        true,
-		}
+		queryPlan := NewQueryPlan(SELECT, true, bitMap)
+		queryPlan.SetColumnsToSelect(&winningPicks)
+		queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitMap.GetTotalRecords()))
+		queryPlan.SetMinValue(2)
+		queryPlan.SetMaxValue(5)
 
 		queryEngine := LotteryBetsQueryEngine{
 			boolMap: bitMap,

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
+func TestLotteryBetsQueryEngine_BoolMap_ExecuteQuery(t *testing.T) {
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, 100)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
@@ -32,16 +32,52 @@ func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
 	}
 
 	winningPicks := []uint{29, 30, 32, 31, 78}
-	queryPlan := QueryPlan{
-		columnsToSelect: &winningPicks,
-		aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
-		minValue:        minimumValidPick,
-		maxValue:        maximumValidPick,
-		category:        true,
-	}
+	queryPlan := NewQueryPlan(SELECT, true, boolMap)
+	queryPlan.SetColumnsToSelect(&winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
 		boolMap: boolMap,
+	}
+
+	answerMap := queryEngine.ExecuteQuery(queryPlan)
+
+	assertEqualMap(t, expectedResult, answerMap, "Wrong query result")
+}
+
+func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
+	bitmap := NewBitMap(minimumValidPick, maximumValidPick, 100)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(bitmap, " ")
+
+	mockBets := []string{
+		"29 10 11 12 13",
+		"20 31 32 81 60",
+		"78 30 29 10 11",
+		"29 30 32 31 80",
+		"29 30 32 31 78",
+	}
+
+	expectedResult := make(map[uint]uint)
+	expectedResult[5] = 1
+	expectedResult[4] = 1
+	expectedResult[3] = 1
+	expectedResult[2] = 1
+
+	for _, mockBet := range mockBets {
+		lotteryBetsVisitor.Visit(mockBet)
+	}
+
+	winningPicks := []uint{29, 30, 32, 31, 78}
+	queryPlan := NewQueryPlan(SELECT, true, bitmap)
+	queryPlan.SetColumnsToSelect(&winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitmap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
+
+	queryEngine := LotteryBetsQueryEngine{
+		boolMap: bitmap,
 	}
 
 	answerMap := queryEngine.ExecuteQuery(queryPlan)
@@ -65,16 +101,17 @@ func BenchmarkLotteryBetsQueryEngine_BoolMap_10m_v2_ExecuteQuery(b *testing.B) {
 		lottoBet := scanner.Text()
 		lotteryBetsVisitor.Visit(lottoBet)
 	}
-	file.Close()
+	fileHandlingError := file.Close()
+	if fileHandlingError != nil {
+		b.Fatal(fileHandlingError)
+	}
 
 	var winningPicks *[]uint
-	queryPlan := QueryPlan{
-		columnsToSelect: winningPicks,
-		aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
-		minValue:        minimumValidPick,
-		maxValue:        maximumValidPick,
-		category:        true,
-	}
+	queryPlan := NewQueryPlan(SELECT, true, boolMap)
+	queryPlan.SetColumnsToSelect(winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
 		boolMap: boolMap,
@@ -114,16 +151,17 @@ func BenchmarkLotteryBetsQueryEngine_BitMap_10m_v2_ExecuteQuery(b *testing.B) {
 		lottoBet := scanner.Text()
 		lotteryBetsVisitor.Visit(lottoBet)
 	}
-	file.Close()
+	fileHandlingError := file.Close()
+	if fileHandlingError != nil {
+		b.Fatal(fileHandlingError)
+	}
 
 	var winningPicks *[]uint
-	queryPlan := QueryPlan{
-		columnsToSelect: winningPicks,
-		aggregationCmd:  NewQueryAggregationBool(bitMap.GetTotalRecords()),
-		minValue:        minimumValidPick,
-		maxValue:        maximumValidPick,
-		category:        true,
-	}
+	queryPlan := NewQueryPlan(SELECT, true, bitMap)
+	queryPlan.SetColumnsToSelect(winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitMap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
 		boolMap: bitMap,

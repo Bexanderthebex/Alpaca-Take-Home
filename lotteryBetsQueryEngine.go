@@ -55,19 +55,62 @@ func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}
 	return qa.aggregationArray
 }
 
+type QueryType int
+
+const (
+	SELECT QueryType = iota + 1
+)
+
+func (qt QueryType) String() string {
+	return [...]string{"SELECT"}[qt]
+}
+
+func (qt QueryType) Int() int {
+	return int(qt)
+}
+
+type Query interface {
+	Execute() map[uint]uint
+}
+
 type QueryPlan struct {
 	columnsToSelect *[]uint
 	aggregationCmd  Aggregation
 	minValue        uint
 	maxValue        uint
+	queryTpe        QueryType
 	category        interface{}
+	table           BitMapIndex
 }
 
-func (qp QueryPlan) SetColumnsToSelect(newColumns *[]uint) {
+func NewQueryPlan(queryType QueryType, category interface{}, table BitMapIndex) *QueryPlan {
+	return &QueryPlan{
+		columnsToSelect: nil,
+		aggregationCmd:  nil,
+		minValue:        0,
+		maxValue:        0,
+		queryTpe:        queryType,
+		category:        category,
+		table:           table,
+	}
+}
+
+func (qp *QueryPlan) SetColumnsToSelect(newColumns *[]uint) {
 	qp.columnsToSelect = newColumns
 }
+func (qp *QueryPlan) SetMinValue(value uint) {
+	qp.minValue = value
+}
 
-func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
+func (qp *QueryPlan) SetMaxValue(value uint) {
+	qp.maxValue = value
+}
+
+func (qp *QueryPlan) SetAggregationStrategy(aggregation Aggregation) {
+	qp.aggregationCmd = aggregation
+}
+
+func (qp *QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 
 	var aggregatedValues *[]uint
@@ -86,10 +129,20 @@ func (qp QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 	return groupedSelectValues
 }
 
+func (qp QueryPlan) Execute() map[uint]uint {
+	if qp.queryTpe.Int() == 1 {
+		if qp.aggregationCmd != nil {
+			return qp.SelectGroupStrategy(qp.table)
+		}
+	}
+
+	return make(map[uint]uint)
+}
+
 type LotteryBetsQueryEngine struct {
 	boolMap BitMapIndex
 }
 
-func (l *LotteryBetsQueryEngine) ExecuteQuery(qp QueryPlan) map[uint]uint {
-	return qp.SelectGroupStrategy(l.boolMap)
+func (l *LotteryBetsQueryEngine) ExecuteQuery(q Query) map[uint]uint {
+	return q.Execute()
 }
