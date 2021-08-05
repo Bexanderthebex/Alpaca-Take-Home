@@ -37,7 +37,8 @@ The boolMap implementation beats the bitMap implementation in terms of speed to 
 in terms of storing data since it is just storing the match column information using 1 bit meaning a single byte in a byte array which makes the
 memory usage 8 times lower than the boolMap implementation.
 
-<img width="1201" alt="Screen Shot 2021-08-02 at 9 55 44 PM" src="https://user-images.githubusercontent.com/22711718/127876492-252a186a-d63a-482d-b1ba-545d2521545d.png">
+<img width="1208" alt="Screen Shot 2021-08-05 at 7 57 50 PM" src="https://user-images.githubusercontent.com/22711718/128346280-d17dab76-997f-4c17-acef-48f72547e7ae.png">
+
 
 <img width="1032" alt="Screen Shot 2021-08-02 at 10 24 24 PM" src="https://user-images.githubusercontent.com/22711718/127877149-b23c2caa-ea76-4411-8467-0b8c45e29714.png">
 
