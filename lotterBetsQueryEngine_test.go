@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bufio"
+	"os"
 	"testing"
 )
+
+var file *os.File
 
 func TestLotteryBetsQueryEngine_BoolMap_ExecuteQuery(t *testing.T) {
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, 100)
@@ -34,7 +38,7 @@ func TestLotteryBetsQueryEngine_BoolMap_ExecuteQuery(t *testing.T) {
 	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: boolMap,
+		bitmapIndex: boolMap,
 	}
 
 	answerMap := queryEngine.ExecuteQuery(queryPlan)
@@ -72,7 +76,7 @@ func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
 	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: bitmap,
+		bitmapIndex: bitmap,
 	}
 
 	answerMap := queryEngine.ExecuteQuery(queryPlan)
@@ -81,9 +85,6 @@ func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
 }
 
 func BenchmarkLotteryBetsQueryEngine_BoolMap_Constant_ExecuteQuery(b *testing.B) {
-	// Initialize data first, so need to stop the timer
-	b.StopTimer()
-
 	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors+1)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
@@ -100,21 +101,16 @@ func BenchmarkLotteryBetsQueryEngine_BoolMap_Constant_ExecuteQuery(b *testing.B)
 	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: boolMap,
+		bitmapIndex: boolMap,
 	}
 
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// stop the timer again when generating a new pick
-		b.StartTimer()
 		queryEngine.ExecuteQuery(queryPlan)
-		b.StopTimer()
 	}
 }
 
 func BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery(b *testing.B) {
-	// Initialize data first, so need to stop the timer
-	b.StopTimer()
-
 	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors/8)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
@@ -131,13 +127,39 @@ func BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery(b *testing.B) 
 	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: bitMap,
+		bitmapIndex: bitMap,
 	}
 
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		queryEngine.ExecuteQuery(queryPlan)
+	}
+}
+
+func BenchmarkLotteryBetsQueryEngine_BoolMap_10m_v2_ExecuteQuery(b *testing.B) {
+	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors+1)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lottoBet := scanner.Text()
+		lotteryBetsVisitor.Visit(lottoBet)
+	}
+
+	winningPicks := []uint{29, 32, 34, 78, 39}
+	queryPlan := NewQueryPlan(SELECT, true, boolMap)
+	queryPlan.SetColumnsToSelect(&winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
+
+	queryEngine := LotteryBetsQueryEngine{
+		bitmapIndex: boolMap,
+	}
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		// stop the timer again when generating a new pick
-		b.StartTimer()
 		queryEngine.ExecuteQuery(queryPlan)
-		b.StopTimer()
 	}
 }

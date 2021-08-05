@@ -140,7 +140,7 @@ func (qp QueryPlan) Execute() map[uint]uint {
 }
 
 type LotteryBetsQueryEngine struct {
-	boolMap BitMapIndex
+	bitmapIndex BitMapIndex
 }
 
 func (l *LotteryBetsQueryEngine) ExecuteQuery(q Query) map[uint]uint {

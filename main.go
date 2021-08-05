@@ -81,7 +81,7 @@ func main() {
 		queryPlan.SetMaxValue(5)
 
 		queryEngine := LotteryBetsQueryEngine{
-			boolMap: bitMap,
+			bitmapIndex: bitMap,
 		}
 
 		answersMap := queryEngine.ExecuteQuery(queryPlan)
