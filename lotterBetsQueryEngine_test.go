@@ -1,12 +1,7 @@
 package main
 
 import (
-	"bufio"
-	"log"
-	"math/rand"
-	"os"
 	"testing"
-	"time"
 )
 
 func TestLotteryBetsQueryEngine_BoolMap_ExecuteQuery(t *testing.T) {
@@ -85,30 +80,21 @@ func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
 	assertEqualMap(t, expectedResult, answerMap, "Wrong query result")
 }
 
-func BenchmarkLotteryBetsQueryEngine_BoolMap_10m_v2_ExecuteQuery(b *testing.B) {
+func BenchmarkLotteryBetsQueryEngine_BoolMap_Constant_ExecuteQuery(b *testing.B) {
 	// Initialize data first, so need to stop the timer
 	b.StopTimer()
-	file, err := os.Open("10m-v2.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
+	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors+1)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lottoBet := scanner.Text()
+	lottoBet := "29 32 34 78 39"
+	for i := 0; i < maximumBettors; i++ {
 		lotteryBetsVisitor.Visit(lottoBet)
 	}
-	fileHandlingError := file.Close()
-	if fileHandlingError != nil {
-		b.Fatal(fileHandlingError)
-	}
 
-	var winningPicks *[]uint
+	winningPicks := []uint{29, 32, 34, 78, 39}
 	queryPlan := NewQueryPlan(SELECT, true, boolMap)
-	queryPlan.SetColumnsToSelect(winningPicks)
+	queryPlan.SetColumnsToSelect(&winningPicks)
 	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
@@ -119,46 +105,27 @@ func BenchmarkLotteryBetsQueryEngine_BoolMap_10m_v2_ExecuteQuery(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		// stop the timer again when generating a new pick
-		b.StopTimer()
-		newWinningPick := make([]uint, 0)
-		for j := 0; j < 5; j++ {
-			rand.Seed(time.Now().UnixNano())
-			min := 1
-			max := 90
-			newWinningPick = append(newWinningPick, uint(rand.Intn(max-min+1)+min))
-		}
-		winningPicks = &newWinningPick
-		queryPlan.columnsToSelect = winningPicks
 		b.StartTimer()
 		queryEngine.ExecuteQuery(queryPlan)
+		b.StopTimer()
 	}
 }
 
-// go test -bench=bitMapExecuteQuery
-func BenchmarkLotteryBetsQueryEngine_BitMap_10m_v2_ExecuteQuery(b *testing.B) {
+func BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery(b *testing.B) {
 	// Initialize data first, so need to stop the timer
 	b.StopTimer()
-	file, err := os.Open("10m-v2.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors/8)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lottoBet := scanner.Text()
+	lottoBet := "29 32 34 78 39"
+	for i := 0; i < maximumBettors; i++ {
 		lotteryBetsVisitor.Visit(lottoBet)
 	}
-	fileHandlingError := file.Close()
-	if fileHandlingError != nil {
-		b.Fatal(fileHandlingError)
-	}
 
-	var winningPicks *[]uint
+	winningPicks := []uint{29, 32, 34, 78, 39}
 	queryPlan := NewQueryPlan(SELECT, true, bitMap)
-	queryPlan.SetColumnsToSelect(winningPicks)
+	queryPlan.SetColumnsToSelect(&winningPicks)
 	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitMap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
@@ -169,17 +136,8 @@ func BenchmarkLotteryBetsQueryEngine_BitMap_10m_v2_ExecuteQuery(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		// stop the timer again when generating a new pick
-		b.StopTimer()
-		newWinningPick := make([]uint, 0)
-		for j := 0; j < 5; j++ {
-			rand.Seed(time.Now().UnixNano())
-			min := 1
-			max := 90
-			newWinningPick = append(newWinningPick, uint(rand.Intn(max-min+1)+min))
-		}
-		winningPicks = &newWinningPick
-		queryPlan.columnsToSelect = winningPicks
 		b.StartTimer()
 		queryEngine.ExecuteQuery(queryPlan)
+		b.StopTimer()
 	}
 }
