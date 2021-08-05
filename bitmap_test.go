@@ -18,23 +18,23 @@ func BenchmarkBitMap_GetValue(b *testing.B) {
 	}
 }
 
-func TestCorrectGetValue(t *testing.T) {
-	boolMap := NewBitMap(1, 90, 100)
+func TestCorrectGetValue_BitMap(t *testing.T) {
+	bitMap := NewBitMap(1, 90, 100)
 
-	boolMap.SetValue(90, 3, true)
-	boolMap.SetValue(78, 3, true)
+	bitMap.SetValue(90, 3, true)
+	bitMap.SetValue(78, 3, true)
 
-	assertEqualBool(t, true, boolMap.GetValue(90, 3), "Incorrect value returned")
-	assertEqualBool(t, true, boolMap.GetValue(78, 3), "Incorrect value returned")
-	assertEqualBool(t, false, boolMap.GetValue(1, 3), "Incorrect value returned")
+	assertEqualBool(t, true, bitMap.GetValue(90, 3), "Incorrect value returned")
+	assertEqualBool(t, true, bitMap.GetValue(78, 3), "Incorrect value returned")
+	assertEqualBool(t, false, bitMap.GetValue(1, 3), "Incorrect value returned")
 }
 
-func TestCorrectGetTotalRecords(t *testing.T) {
-	boolMap := NewBitMap(1, 90, 100)
+func TestCorrectGetTotalRecords_BitMap(t *testing.T) {
+	bitMap := NewBitMap(1, 90, 100)
 
 	for i := 0; i < 10; i++ {
-		boolMap.IncrementTotalRecords()
+		bitMap.IncrementTotalRecords()
 	}
 
-	assertEqualInt(t, 10, int(boolMap.GetTotalRecords()), "Incorrect Total Records returned")
+	assertEqualInt(t, 10, int(bitMap.GetTotalRecords()), "Incorrect Total Records returned")
 }
