@@ -6,7 +6,7 @@ extract-alpaca-input-file:
 
 run-alpaca-input-file:
 	make build
-	./main 10m-v2.txt
+	./speedy-lotto 10m-v2.txt
 
 test-correctness:
 	APP_ENVIRONMENT=TEST go test -v .
