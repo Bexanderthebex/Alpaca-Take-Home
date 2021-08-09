@@ -48,11 +48,11 @@ type Query interface {
 type QueryPlan struct {
 	columnsToSelect *[]uint
 	aggregationCmd  Aggregation
+	table           BitMapIndex
+	queryTpe        QueryType
 	minValue        uint
 	maxValue        uint
-	queryTpe        QueryType
 	category        interface{}
-	table           BitMapIndex
 }
 
 func NewQueryPlan(queryType QueryType, category interface{}, table BitMapIndex) *QueryPlan {
@@ -86,12 +86,14 @@ func (qp *QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 
 	var aggregatedValues *[]uint
+	totalRecords := table.GetTotalRecords()
 	for _, v := range *qp.columnsToSelect {
 		qp.aggregationCmd.SetCurrentRecord(v)
-		totalRecords := table.GetTotalRecords()
+		// accumulate the values
 		aggregatedValues = qp.aggregationCmd.Aggregate(table, qp.category, totalRecords)
 	}
 
+	// count the accumulated values
 	for _, v := range *aggregatedValues {
 		if v >= qp.minValue && v <= qp.maxValue {
 			groupedSelectValues[v] += 1
