@@ -76,7 +76,7 @@ func main() {
 
 		queryPlan := NewQueryPlan(SELECT, true, bitMap)
 		queryPlan.SetColumnsToSelect(&winningPicks)
-		queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitMap.GetTotalRecords()))
+		queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
 		queryPlan.SetMinValue(2)
 		queryPlan.SetMaxValue(5)
 

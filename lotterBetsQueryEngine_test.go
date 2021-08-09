@@ -29,7 +29,7 @@ func TestLotteryBetsQueryEngine_BoolMap_ExecuteQuery(t *testing.T) {
 	winningPicks := []uint{29, 30, 32, 31, 78}
 	queryPlan := NewQueryPlan(SELECT, true, boolMap)
 	queryPlan.SetColumnsToSelect(&winningPicks)
-	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(boolMap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
 
@@ -67,7 +67,7 @@ func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
 	winningPicks := []uint{29, 30, 32, 31, 78}
 	queryPlan := NewQueryPlan(SELECT, true, bitmap)
 	queryPlan.SetColumnsToSelect(&winningPicks)
-	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitmap.GetTotalRecords()))
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(bitmap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
 
@@ -92,7 +92,7 @@ func BenchmarkLotteryBetsQueryEngine_BoolMap_Constant_ExecuteQuery(b *testing.B)
 	winningPicks := []uint{29, 32, 34, 78, 39}
 	queryPlan := NewQueryPlan(SELECT, true, boolMap)
 	queryPlan.SetColumnsToSelect(&winningPicks)
-	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(boolMap.GetTotalRecords()))
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(boolMap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
 
@@ -118,7 +118,7 @@ func BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery(b *testing.B) 
 	winningPicks := []uint{29, 32, 34, 78, 39}
 	queryPlan := NewQueryPlan(SELECT, true, bitMap)
 	queryPlan.SetColumnsToSelect(&winningPicks)
-	queryPlan.SetAggregationStrategy(NewQueryAggregationBool(bitMap.GetTotalRecords()))
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
 

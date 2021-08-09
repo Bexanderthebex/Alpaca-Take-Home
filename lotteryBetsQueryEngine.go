@@ -5,30 +5,30 @@ type Aggregation interface {
 	SetCurrentRecord(uint)
 }
 
-type BoolQueryAggregation struct {
+type QueryAggregation struct {
 	aggregationArray   *[]uint
 	aggregationCommand AggregationType
 	currentRecord      uint
 }
 
-func NewQueryAggregationBool(recordLength uint) *BoolQueryAggregation {
+func NewQueryAggregation(recordLength uint) *QueryAggregation {
 	resultingAggregation := make([]uint, recordLength)
 
-	return &BoolQueryAggregation{
+	return &QueryAggregation{
 		aggregationArray:   &resultingAggregation,
 		aggregationCommand: GROUP,
 	}
 }
 
-func (qa *BoolQueryAggregation) SetCurrentRecord(recordIndex uint) {
+func (qa *QueryAggregation) SetCurrentRecord(recordIndex uint) {
 	qa.currentRecord = recordIndex
 }
 
-func (qa BoolQueryAggregation) getCurrentRecord() uint {
+func (qa QueryAggregation) getCurrentRecord() uint {
 	return qa.currentRecord
 }
 
-func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
+func (qa QueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
 		for recordId := uint(0); recordId <= limit; recordId++ {
 			tableValue := table.GetValue(qa.getCurrentRecord(), recordId)
