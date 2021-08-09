@@ -1,19 +1,5 @@
 package main
 
-type AggregationCommand int
-
-const (
-	GROUP AggregationCommand = iota + 1
-)
-
-func (qa AggregationCommand) String() string {
-	return [...]string{"GROUP"}[qa]
-}
-
-func (qa AggregationCommand) Int() int {
-	return int(qa)
-}
-
 type Aggregation interface {
 	Aggregate(BitMapIndex, interface{}, uint) *[]uint
 	SetCurrentRecord(uint)
@@ -21,7 +7,7 @@ type Aggregation interface {
 
 type BoolQueryAggregation struct {
 	aggregationArray   *[]uint
-	aggregationCommand AggregationCommand
+	aggregationCommand AggregationType
 	currentRecord      uint
 }
 
@@ -53,20 +39,6 @@ func (qa BoolQueryAggregation) Aggregate(table BitMapIndex, category interface{}
 	}
 
 	return qa.aggregationArray
-}
-
-type QueryType int
-
-const (
-	SELECT QueryType = iota + 1
-)
-
-func (qt QueryType) String() string {
-	return [...]string{"SELECT"}[qt]
-}
-
-func (qt QueryType) Int() int {
-	return int(qt)
 }
 
 type Query interface {
