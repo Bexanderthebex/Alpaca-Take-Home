@@ -13,7 +13,7 @@ func NewBitMap(startingCardinality uint, cardinality uint, setSize int) *BitMap 
 		bitMap:       make(map[uint]*bitset.BitSet),
 	}
 	for i := startingCardinality; i <= cardinality; i++ {
-		bm.bitMap[i] = bitset.New(uint(setSize))
+		bm.bitMap[i] = bitset.New(uint(setSize / 8))
 	}
 
 	return bm

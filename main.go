@@ -27,7 +27,7 @@ func main() {
 	}
 
 	//bitMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors/8)
+	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
 	scanner := bufio.NewScanner(file)
