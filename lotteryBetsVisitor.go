@@ -23,21 +23,18 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 	// TODO: made the cap similar to width
 	lottoPicks := make([]string, 0, 5)
 	for _, s := range strings.Split(lottoBet, l.separator) {
-		if s != "" {
-			lottoPicks = append(lottoPicks, s)
-		}
+		lottoPicks = append(lottoPicks, s)
 	}
 
 	formattedLottoPicks := make([]uint, 0, 5)
 	for _, lottoPick := range lottoPicks {
-		formattedLottoPick, _ := strconv.Atoi(lottoPick)
-		validLottoPickFormat := uint(formattedLottoPick)
-		formattedLottoPicks = append(formattedLottoPicks, validLottoPickFormat)
+		validLottoPickFormat, _ := strconv.ParseUint(lottoPick, 10, 8)
+		formattedLottoPicks = append(formattedLottoPicks, uint(validLottoPickFormat))
 	}
 
 	if picksValid(formattedLottoPicks) {
+		recordId := l.bitmap.GetTotalRecords()
 		for _, flt := range formattedLottoPicks {
-			recordId := l.bitmap.GetTotalRecords()
 			l.bitmap.SetValue(flt, recordId, true)
 		}
 
