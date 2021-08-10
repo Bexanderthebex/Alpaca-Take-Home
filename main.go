@@ -26,19 +26,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//playerPicksIndex := lib.New(minimumValidPick, maximumValidPick, 10000000)
+	//bitMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
+	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
-	boolMap := NewBoolMap(minimumValidPick, maximumValidPick, maximumBettors)
-	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
-
-	for {
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			lottoBet := scanner.Text()
-			lotteryBetsVisitor.Visit(lottoBet)
-		}
-
-		break
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lottoBet := scanner.Text()
+		lotteryBetsVisitor.Visit(lottoBet)
 	}
 
 	if fileCloseError := file.Close(); fileCloseError != nil {
@@ -46,10 +41,14 @@ func main() {
 	}
 
 	reader := bufio.NewReader(os.Stdin)
+	queryPlan := NewQueryPlan(SELECT, true, bitMap)
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
+
 	fmt.Println("READY")
 
 	// query engine
-	for continueSearch := true; continueSearch == true; {
+	for {
 		text, readStringError := reader.ReadString('\n')
 		if readStringError != nil {
 			fmt.Println(readStringError)
@@ -79,27 +78,22 @@ func main() {
 		fmt.Println("Winning picks parsed:")
 		fmt.Println(winningPicks)
 
-		queryPlan := QueryPlan{
-			columnsToSelect: &winningPicks,
-			aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
-			minValue:        minimumValidPick,
-			maxValue:        maximumValidPick,
-			category:        true,
-		}
+		queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
+		queryPlan.SetColumnsToSelect(&winningPicks)
 
 		queryEngine := LotteryBetsQueryEngine{
-			boolMap: boolMap,
+			bitmapIndex: bitMap,
 		}
 
-		//answersMap := calculateWinners(winningPicks, playerPicksIndex, recordCount)
 		answersMap := queryEngine.ExecuteQuery(queryPlan)
 
-		for i := 5; i >= 2; i-- {
-			fmt.Printf("%d: %d\n", i, answersMap[uint(i)])
+		for i := uint(5); i >= 2; i-- {
+			fmt.Printf("%d: %d\n", i, answersMap[i])
 		}
 	}
 }
 
+// TODO: Change the data type to a column map so we instantly know if there where repeating values
 func picksValid(picks []uint) bool {
 	if len(picks) < lottoPickLength {
 		return false

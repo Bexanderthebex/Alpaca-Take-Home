@@ -9,7 +9,7 @@ run-alpaca-input-file:
 	./speedy-lotto 10m-v2.txt
 
 test-correctness:
-	go test -v .
+	APP_ENVIRONMENT=TEST go test -v .
 
 test-benchmark:
-	go test -bench=. -benchmem
+	APP_ENVIRONMENT=TEST go test -bench=. -benchmem

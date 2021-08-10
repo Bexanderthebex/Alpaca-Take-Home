@@ -20,7 +20,7 @@ func BenchmarkBoolMap_GetValue(b *testing.B) {
 	}
 }
 
-func TestCorrectGetValue(t *testing.T) {
+func TestCorrectGetValue_BoolMap(t *testing.T) {
 	boolMap := NewBoolMap(1, 90, 100)
 
 	boolMap.SetValue(90, 3, true)
@@ -31,7 +31,7 @@ func TestCorrectGetValue(t *testing.T) {
 	assertEqualBool(t, false, boolMap.GetValue(1, 3), "Incorrect value returned")
 }
 
-func TestCorrectGetTotalRecords(t *testing.T) {
+func TestCorrectGetTotalRecords_BoolMap(t *testing.T) {
 	boolMap := NewBoolMap(1, 90, 100)
 
 	for i := 0; i < 10; i++ {

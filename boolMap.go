@@ -23,16 +23,12 @@ func (bm *BoolMap) SetValue(index uint, recordId uint, value bool) {
 	(*boolSet)[recordId] = value
 }
 
-func (bm *BoolMap) GetValue(index uint, recordId uint) bool {
+func (bm BoolMap) GetValue(index uint, recordId uint) bool {
 	boolSet := bm.boolMap[index]
 	return (*boolSet)[recordId]
 }
 
-func (bm *BoolMap) GetIndex(index uint) *[]bool {
-	return bm.boolMap[index]
-}
-
-func (bm *BoolMap) GetTotalRecords() uint {
+func (bm BoolMap) GetTotalRecords() uint {
 	return bm.totalRecords
 }
 
