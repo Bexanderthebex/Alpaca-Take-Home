@@ -9,6 +9,11 @@ run-alpaca-input-file:
 	make build
 	./speedy-lotto 10m-v2.txt
 
+run:
+	make build
+	@echo using $(file)
+	./speedy-lotto $(file)
+
 test-correctness:
 	APP_ENVIRONMENT=TEST go test -v .
 
