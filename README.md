@@ -49,6 +49,21 @@ Time Complexity: O(X * N) where X is the width of the bets and N is the maximum 
 Space Complexity: O(M * N) where M is the cardinality which is 90 and N is the maximum number of better which is in our case is 10 million. 
 In our case, we can say O(M * (N/8)) since we used bits to store the bet information instead of a whole byte.
 
+### Memory and CPU profile
+- Based on the `BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery` test
+- Involves decoding N number of records, storing the records to the Bitmap, querying the Bitmap, and encoding the result
+- The benchmark was called 2 times while generating the memory profile binary
+
+#### Memory
+<img width="1129" alt="Screen Shot 2021-08-10 at 7 42 36 PM" src="https://user-images.githubusercontent.com/22711718/128861429-c3a10621-84e1-4683-94de-42325c124397.png">
+
+#### CPU
+<img width="857" alt="Screen Shot 2021-08-10 at 7 47 11 PM" src="https://user-images.githubusercontent.com/22711718/128861675-c897b08e-7e8c-4ef9-8239-c7cdd52705c7.png">
+
+#### Memory usage in activity monitor
+<img width="950" alt="Screen Shot 2021-08-10 at 7 49 00 PM" src="https://user-images.githubusercontent.com/22711718/128861843-b834b648-340b-40ca-908d-f2940d5dbc42.png">
+
+
 ### How to run?
 1. Run `make run-alpaca-input-file` to use the alpaca provided file
 
