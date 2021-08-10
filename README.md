@@ -16,6 +16,15 @@ Now, the problem: at the lottery event, right after picking the numbers, a compu
 
 This report shall be generated within a couple of seconds after picking the winner number. The player’s numbers are known in advance – at least 1 hour ahead of the show. In peak periods there are about 5 million players, but to be sure we can assume it is not exceeding 10 million.
 
+### Assumptions:
+1. A bet that has non-unique values will be discarded: e.g. 22 32 34 78 22
+2. A bet that has a value that is not within the 1 - 90 bound will be discarded: e.g. 22 -7 91 11 12
+
+### Libraries used:
+1. bitset: https://github.com/bits-and-blooms/bitset
+
+   - Used the library for bitwise operations instead of using save space instead of using a `[]bool` which is 8x more expensive in terms of memory compared to using `math.bits` 
+
 ### My Solution
 
 The algorithm for finding the matches is scanning the entries or bets and checking each number whether it has a match in 
@@ -32,27 +41,18 @@ wherein locations to disk memory are maintained using an M-nary tree to create a
 requires that the records have an order but since the algorithm for finding matches do not need an order (Combination vs Permutations),
 one will have to look elsewhere and this leads me to a Bitmap. 
 
-In my solution, I implemented a boolMap `map[uint]*[]bool` and compared it against a bitMap implementation `map[uint]*[]byte`.
-The boolMap implementation beats the bitMap implementation in terms of speed to query but the bitMap implementation is much more efficient
-in terms of storing data since it is just storing the match column information using 1 bit meaning a single byte in a byte array which makes the
-memory usage 8 times lower than the boolMap implementation.
+I decided to use a BitMap because of the low cardinality of possible values within a bet which fits it perfectly to the data structure. Another
+reason that the operation that is needed to perform to return the values is fairly simple and will fit to bitwise operations. 
 
-<img width="1208" alt="Screen Shot 2021-08-05 at 7 57 50 PM" src="https://user-images.githubusercontent.com/22711718/128346280-d17dab76-997f-4c17-acef-48f72547e7ae.png">
+Time Complexity: O(X * N) where X is the width of the bets and N is the maximum number of bettors which is in our case 10 million
 
-
-<img width="1032" alt="Screen Shot 2021-08-02 at 10 24 24 PM" src="https://user-images.githubusercontent.com/22711718/127877149-b23c2caa-ea76-4411-8467-0b8c45e29714.png">
-
-**Memory used when using a bitMap**
-<img width="942" alt="Screen Shot 2021-08-02 at 10 27 21 PM" src="https://user-images.githubusercontent.com/22711718/127877426-ab7965ad-dfe4-4396-8c08-42d734ff2099.png">
-
-**Memory used when using a boolMap**
-<img width="954" alt="Screen Shot 2021-08-02 at 10 28 49 PM" src="https://user-images.githubusercontent.com/22711718/127877578-4dfb451f-f556-425e-aa39-1189c798311d.png">
+Space Complexity: O(M * N) where M is the cardinality which is 90 and N is the maximum number of better which is in our case is 10 million. 
+In our case, we can say O(M * (N/8)) since we used bits to store the bet information instead of a whole byte.
 
 ### How to run?
-1. First extract the Alpaca Markets input file using `make extract-alpaca-input-file`
-2. Run the app using the Alpaca input file using `make run-alpaca-input-file`
+1. Run `make run-alpaca-input-file` to use the alpaca provided file
 
 ### How to run tests?
-For Benchmarks, run `make test-benchmark`
+1. For Benchmarks, run `make test-benchmark`
 
-For Unit tests, run `make test-correctness`
+2. For Unit tests, run `make test-correctness`
