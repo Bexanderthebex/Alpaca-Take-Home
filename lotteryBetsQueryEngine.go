@@ -11,13 +11,13 @@ type Query interface {
 type SelectQueryPlan struct {
 	columnsToSelect *map[uint]uint
 	aggregationCmd  []Aggregation
-	table           BitMapIndex
+	table           *BitMap
 	minValue        uint
 	maxValue        uint
 	category        interface{}
 }
 
-func NewSelectQueryPlan(table BitMapIndex) *SelectQueryPlan {
+func NewSelectQueryPlan(table *BitMap) *SelectQueryPlan {
 	return &SelectQueryPlan{
 		columnsToSelect: nil,
 		aggregationCmd:  make([]Aggregation, 0),
@@ -53,7 +53,7 @@ func (qp SelectQueryPlan) Execute() map[uint]uint {
 }
 
 type LotteryBetsQueryEngine struct {
-	bitmapIndex BitMapIndex
+	bitmapIndex *BitMap
 }
 
 func (l *LotteryBetsQueryEngine) ExecuteQuery(q Query) map[uint]uint {

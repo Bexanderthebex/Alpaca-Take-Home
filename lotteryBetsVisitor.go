@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
 type LotteryBetsVisitor struct {
-	bitmap    BitMapIndex
+	bitmap    *BitMap
 	separator string
 }
 
-func NewLotteryBetsVisitor(bitmap BitMapIndex, separator string) *LotteryBetsVisitor {
+func NewLotteryBetsVisitor(bitmap *BitMap, separator string) *LotteryBetsVisitor {
 	return &LotteryBetsVisitor{
 		bitmap:    bitmap,
 		separator: separator,
@@ -39,9 +38,7 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 		}
 
 		l.bitmap.IncrementTotalRecords()
-	}
-
-	if !picksValid(formattedLottoPicks) && os.Getenv("APP_ENVIRONMENT") != "TEST" {
+	} else {
 		fmt.Println("Detected invalid lotto picks. Discarding")
 		fmt.Println(lottoPicks)
 	}

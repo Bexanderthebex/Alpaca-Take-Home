@@ -3,10 +3,10 @@ package main
 type CountAggregation struct {
 	columns     *map[uint]uint
 	accumulator *[]uint
-	table       BitMapIndex
+	table       *BitMap
 }
 
-func NewCountAggregation(winningPicks *map[uint]uint, accumulator *[]uint, table BitMapIndex) *CountAggregation {
+func NewCountAggregation(winningPicks *map[uint]uint, accumulator *[]uint, table *BitMap) *CountAggregation {
 	return &CountAggregation{
 		columns:     winningPicks,
 		accumulator: accumulator,
