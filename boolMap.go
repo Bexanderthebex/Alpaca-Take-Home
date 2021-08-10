@@ -45,31 +45,3 @@ func (bm *BoolMap) IncrementTotalRecords() uint {
 func (bm *BoolMap) setBoolSet(index uint, boolSet *[]bool) {
 	(*bm).boolMap[index] = boolSet
 }
-
-func (bm *BoolMap) CalculateWinners(nums *[]uint, minMatch uint) map[uint]uint {
-	winningPicksIndex := make(map[uint]*[]bool)
-	// winning picks
-	for _, v := range *nums {
-		winningPicksIndex[v] = (*bm).boolMap[v]
-	}
-
-	groupedWinnersCount := make(map[uint]uint)
-	for i := uint(len(*nums)); i >= 2; i-- {
-		groupedWinnersCount[i] = 0
-	}
-
-	for i := uint(0); i < (*bm).totalRecords; i++ {
-		var noOfHits uint = 0
-		for _, index := range winningPicksIndex {
-			if (*index)[i] {
-				noOfHits += 1
-			}
-		}
-
-		if noOfHits >= minMatch {
-			groupedWinnersCount[noOfHits] += 1
-		}
-	}
-
-	return groupedWinnersCount
-}
