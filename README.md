@@ -51,6 +51,7 @@ In our case, we can say O(M * (N/8)) since we used bits to store the bet informa
 
 ### How to run?
 1. Run `make run-alpaca-input-file` to use the alpaca provided file
+2. Run `make file=<file_name_at_root> run` to use a custom file in the directory root
 
 ### How to run tests?
 1. For Benchmarks, run `make test-benchmark`
