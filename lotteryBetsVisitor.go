@@ -26,10 +26,10 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 		lottoPicks = append(lottoPicks, s)
 	}
 
-	formattedLottoPicks := make([]uint, 0, 5)
+	formattedLottoPicks := make(map[uint]uint)
 	for _, lottoPick := range lottoPicks {
 		validLottoPickFormat, _ := strconv.ParseUint(lottoPick, 10, 8)
-		formattedLottoPicks = append(formattedLottoPicks, uint(validLottoPickFormat))
+		formattedLottoPicks[uint(validLottoPickFormat)] += 1
 	}
 
 	if picksValid(formattedLottoPicks) {
