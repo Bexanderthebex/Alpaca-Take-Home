@@ -2,7 +2,7 @@ build:
 	go build .
 
 extract-alpaca-input-file:
-	gunzip 10m-v2.txt.gz -f
+	gunzip -c 10m-v2.txt.gz >10m-v2.txt
 
 run-alpaca-input-file:
 	make build

@@ -1,7 +1,7 @@
 package main
 
 type Aggregation interface {
-	Aggregate(BitMapIndex, interface{}, uint) *[]uint
+	Aggregate(*BitMap, interface{}, uint) *[]uint
 	SetCurrentRecord(uint)
 }
 
@@ -28,7 +28,7 @@ func (qa QueryAggregation) getCurrentRecord() uint {
 	return qa.currentRecord
 }
 
-func (qa QueryAggregation) Aggregate(table BitMapIndex, category interface{}, limit uint) *[]uint {
+func (qa QueryAggregation) Aggregate(table *BitMap, category interface{}, limit uint) *[]uint {
 	if qa.aggregationCommand.Int() == 1 {
 		for recordId := uint(0); recordId <= limit; recordId++ {
 			tableValue := table.GetValue(qa.getCurrentRecord(), recordId)
@@ -48,14 +48,14 @@ type Query interface {
 type QueryPlan struct {
 	columnsToSelect *[]uint
 	aggregationCmd  Aggregation
-	table           BitMapIndex
+	table           *BitMap
 	queryTpe        QueryType
 	minValue        uint
 	maxValue        uint
 	category        interface{}
 }
 
-func NewQueryPlan(queryType QueryType, category interface{}, table BitMapIndex) *QueryPlan {
+func NewQueryPlan(queryType QueryType, category interface{}, table *BitMap) *QueryPlan {
 	return &QueryPlan{
 		columnsToSelect: nil,
 		aggregationCmd:  nil,
@@ -82,7 +82,7 @@ func (qp *QueryPlan) SetAggregationStrategy(aggregation Aggregation) {
 	qp.aggregationCmd = aggregation
 }
 
-func (qp *QueryPlan) SelectGroupStrategy(table BitMapIndex) map[uint]uint {
+func (qp *QueryPlan) SelectGroupStrategy(table *BitMap) map[uint]uint {
 	groupedSelectValues := make(map[uint]uint)
 
 	var aggregatedValues *[]uint
@@ -114,7 +114,7 @@ func (qp QueryPlan) Execute() map[uint]uint {
 }
 
 type LotteryBetsQueryEngine struct {
-	bitmapIndex BitMapIndex
+	bitmap *BitMap
 }
 
 func (l *LotteryBetsQueryEngine) ExecuteQuery(q Query) map[uint]uint {

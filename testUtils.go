@@ -26,7 +26,7 @@ func assertEqualInt(t *testing.T, expected int, actual int, message string) {
 }
 
 func assertEqualMap(t *testing.T, expected map[uint]uint, actual map[uint]uint, message string) {
-	for key, _ := range expected {
+	for key := range expected {
 		if expected[key] != actual[key] {
 			t.Fatal(message)
 		}

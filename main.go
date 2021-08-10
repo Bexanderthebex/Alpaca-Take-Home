@@ -71,7 +71,7 @@ func main() {
 
 		isPicksValid := picksValid(winningPicks)
 		if !isPicksValid {
-			fmt.Println("Please enter values that are only between 1 and 90")
+			fmt.Println("Please enter values that are only between 1 and 90 and the picks should be unique from each other")
 			continue
 		}
 
@@ -82,7 +82,7 @@ func main() {
 		queryPlan.SetColumnsToSelect(&winningPicks)
 
 		queryEngine := LotteryBetsQueryEngine{
-			bitmapIndex: bitMap,
+			bitmap: bitMap,
 		}
 
 		answersMap := queryEngine.ExecuteQuery(queryPlan)
