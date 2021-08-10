@@ -41,6 +41,10 @@ func main() {
 	}
 
 	reader := bufio.NewReader(os.Stdin)
+	queryPlan := NewQueryPlan(SELECT, true, bitMap)
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
+
 	fmt.Println("READY")
 
 	// query engine
@@ -74,11 +78,8 @@ func main() {
 		fmt.Println("Winning picks parsed:")
 		fmt.Println(winningPicks)
 
-		queryPlan := NewQueryPlan(SELECT, true, bitMap)
-		queryPlan.SetColumnsToSelect(&winningPicks)
 		queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
-		queryPlan.SetMinValue(2)
-		queryPlan.SetMaxValue(5)
+		queryPlan.SetColumnsToSelect(&winningPicks)
 
 		queryEngine := LotteryBetsQueryEngine{
 			bitmapIndex: bitMap,
@@ -86,12 +87,13 @@ func main() {
 
 		answersMap := queryEngine.ExecuteQuery(queryPlan)
 
-		for i := 5; i >= 2; i-- {
-			fmt.Printf("%d: %d\n", i, answersMap[uint(i)])
+		for i := uint(5); i >= 2; i-- {
+			fmt.Printf("%d: %d\n", i, answersMap[i])
 		}
 	}
 }
 
+// TODO: Change the data type to a column map so we instantly know if there where repeating values
 func picksValid(picks []uint) bool {
 	if len(picks) < lottoPickLength {
 		return false
