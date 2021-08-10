@@ -1,32 +1,17 @@
 package main
 
 import (
-	"bufio"
-	"log"
-	"os"
 	"testing"
 )
 
-//TODO: not bad but might be improved
 func BenchmarkLotteryBetsVisitor_Visit(b *testing.B) {
-	boolMap := NewBoolMap(1, 90, 10000000)
+	boolMap := NewBoolMap(1, 90, b.N)
 	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
 
-	file, err := os.Open("file-mocks/sample.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	for {
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			lottoBet := scanner.Text()
-			b.StartTimer()
-			lotteryBetsVisitor.Visit(lottoBet)
-			b.StopTimer()
-		}
-		break
+	bet := "29 32 34 78 39"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		lotteryBetsVisitor.Visit(bet)
 	}
 }
 
