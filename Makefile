@@ -5,6 +5,7 @@ extract-alpaca-input-file:
 	gunzip -c 10m-v2.txt.gz >10m-v2.txt
 
 run-alpaca-input-file:
+	make extract-alpaca-input-file
 	make build
 	./speedy-lotto 10m-v2.txt
 
