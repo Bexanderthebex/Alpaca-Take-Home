@@ -41,18 +41,19 @@ func main() {
 	}
 
 	reader := bufio.NewReader(os.Stdin)
-	queryPlan := NewQueryPlan(SELECT, true, bitMap)
+	queryPlan := NewSelectQueryPlan(bitMap)
 	queryPlan.SetMinValue(2)
 	queryPlan.SetMaxValue(5)
 
-	//queryEngine := LotteryBetsQueryEngine{
-	//	bitmapIndex: bitMap,
-	//}
+	queryEngine := LotteryBetsQueryEngine{
+		bitmapIndex: bitMap,
+	}
 
 	fmt.Println("READY")
 
 	// query engine
 	for {
+		accumulator := make([]uint, maximumBettors)
 		text, readStringError := reader.ReadString('\n')
 		if readStringError != nil {
 			fmt.Println(readStringError)
@@ -82,13 +83,14 @@ func main() {
 		fmt.Println("Winning picks parsed:")
 		fmt.Println(winningPicks)
 
-		//queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
-		//queryPlan.SetColumnsToSelect(&winningPicks)
-		//
-		//answersMap := queryEngine.ExecuteQuery(queryPlan)
+		queryPlan.SetColumnsToSelect(&winningPicks)
+		queryPlan.AddAggregationStrategy(NewCountAggregation(&winningPicks, &accumulator, bitMap))
+		queryPlan.AddAggregationStrategy(NewGroupAggregation(&accumulator, []uint{5, 4, 3, 2}))
 
-		//for i := uint(5); i >= 2; i-- {
-		//	fmt.Printf("%d: %d\n", i, answersMap[i])
-		//}
+		answersMap := queryEngine.ExecuteQuery(queryPlan)
+
+		for i := uint(5); i >= 2; i-- {
+			fmt.Printf("%d: %d\n", i, answersMap[i])
+		}
 	}
 }

@@ -28,13 +28,13 @@ func (l *LotteryBetsVisitor) Visit(lottoBet string) {
 
 	formattedLottoPicks := make(map[uint]uint)
 	for _, lottoPick := range lottoPicks {
-		validLottoPickFormat, _ := strconv.ParseUint(lottoPick, 10, 8)
+		validLottoPickFormat, _ := strconv.Atoi(lottoPick)
 		formattedLottoPicks[uint(validLottoPickFormat)] += 1
 	}
 
 	if picksValid(formattedLottoPicks) {
 		recordId := l.bitmap.GetTotalRecords()
-		for _, flt := range formattedLottoPicks {
+		for flt := range formattedLottoPicks {
 			l.bitmap.SetValue(flt, recordId, true)
 		}
 
