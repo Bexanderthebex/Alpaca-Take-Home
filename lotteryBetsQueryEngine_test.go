@@ -1,10 +1,12 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
-	boolMap := NewBoolMap(1, 90, 5)
-	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
+func TestLotteryBetsQueryEngine_BitMap_ExecuteQuery(t *testing.T) {
+	bitmap := NewBitMap(minimumValidPick, maximumValidPick, 100)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(bitmap, " ")
 
 	mockBets := []string{
 		"29 10 11 12 13",
@@ -14,27 +16,25 @@ func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
 		"29 30 32 31 78",
 	}
 
-	for _, mockBet := range mockBets {
-		lotteryBetsVisitor.Visit(mockBet)
-	}
-
 	expectedResult := make(map[uint]uint)
 	expectedResult[5] = 1
 	expectedResult[4] = 1
 	expectedResult[3] = 1
 	expectedResult[2] = 1
 
-	winningPicks := []uint{29, 30, 32, 31, 78}
-	queryPlan := QueryPlan{
-		columnsToSelect: &winningPicks,
-		aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
-		minValue:        minimumValidPick,
-		maxValue:        maximumValidPick,
-		category:        true,
+	for _, mockBet := range mockBets {
+		lotteryBetsVisitor.Visit(mockBet)
 	}
 
+	winningPicks := []uint{29, 30, 32, 31, 78}
+	queryPlan := NewQueryPlan(SELECT, true, bitmap)
+	queryPlan.SetColumnsToSelect(&winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(bitmap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
+
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: boolMap,
+		bitmap: bitmap,
 	}
 
 	answerMap := queryEngine.ExecuteQuery(queryPlan)
@@ -42,26 +42,24 @@ func TestLotteryBetsQueryEngine_ExecuteQuery(t *testing.T) {
 	assertEqualMap(t, expectedResult, answerMap, "Wrong query result")
 }
 
-func BenchmarkLotteryBetsQueryEngine_ExecuteQuery(b *testing.B) {
-	boolMap := NewBoolMap(1, 90, b.N)
-	lotteryBetsVisitor := NewLotteryBetsVisitor(boolMap, " ")
+func BenchmarkLotteryBetsQueryEngine_BitMap_Constant_ExecuteQuery(b *testing.B) {
+	bitMap := NewBitMap(minimumValidPick, maximumValidPick, maximumBettors/8)
+	lotteryBetsVisitor := NewLotteryBetsVisitor(bitMap, " ")
 
-	bet := "29 32 34 78 39"
-	for i := 0; i < b.N; i++ {
-		lotteryBetsVisitor.Visit(bet)
+	lottoBet := "29 32 34 78 39"
+	for i := 0; i < maximumBettors; i++ {
+		lotteryBetsVisitor.Visit(lottoBet)
 	}
 
 	winningPicks := []uint{29, 32, 34, 78, 39}
-	queryPlan := QueryPlan{
-		columnsToSelect: &winningPicks,
-		aggregationCmd:  NewQueryAggregationBool(boolMap.GetTotalRecords()),
-		minValue:        minimumValidPick,
-		maxValue:        maximumValidPick,
-		category:        true,
-	}
+	queryPlan := NewQueryPlan(SELECT, true, bitMap)
+	queryPlan.SetColumnsToSelect(&winningPicks)
+	queryPlan.SetAggregationStrategy(NewQueryAggregation(bitMap.GetTotalRecords()))
+	queryPlan.SetMinValue(2)
+	queryPlan.SetMaxValue(5)
 
 	queryEngine := LotteryBetsQueryEngine{
-		boolMap: boolMap,
+		bitmap: bitMap,
 	}
 
 	b.ResetTimer()
